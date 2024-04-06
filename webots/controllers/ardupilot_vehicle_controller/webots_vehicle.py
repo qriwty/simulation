@@ -53,10 +53,11 @@ class WebotsArduVehicle():
                  gyro_name: str = "gyro",
                  gps_name: str = "gps",
                  camera_name: str = None,
-                 camera_fps: int = 10,
+                 camera_fps: int = 30,
                  camera_stream_port: int = None,
+                 camera_mode: str = "color",
                  rangefinder_name: str = None,
-                 rangefinder_fps: int = 10,
+                 rangefinder_fps: int = 30,
                  rangefinder_stream_port: int = None,
                  instance: int = 0,
                  motor_velocity_cap: float = float('inf'),
@@ -97,6 +98,7 @@ class WebotsArduVehicle():
         self._bidirectional_motors = bidirectional_motors
         self._uses_propellers = uses_propellers
         self._webots_connected = True
+        self._camera_mode = camera_mode
 
         # setup Webots robot instance
         self.robot = Robot()
@@ -313,8 +315,12 @@ class WebotsArduVehicle():
                     start_time = self.robot.getTime()
 
                     # get image
+                    img = None
                     if isinstance(camera, Camera):
-                        img = self.get_camera_gray_image()
+                        if self._camera_mode == "color":
+                            img = self.get_camera_image()
+                        elif self._camera_mode == "greyscale":
+                            img = self.get_camera_gray_image()
                     elif isinstance(camera, RangeFinder):
                         img = self.get_rangefinder_image()
 

@@ -58,13 +58,17 @@ def get_args():
                         help="Webots Camera name (optional)")
     parser.add_argument("--camera-fps",
                         type=int,
-                        default=10,
+                        default=30,
                         help="Camera FPS. Note lower FPS is faster")
     parser.add_argument("--camera-port",
                         type=int,
                         default=None,
                         help="Port to stream grayscale camera images to. "
                              "If no port is supplied the camera will not be streamed.")
+    parser.add_argument("--camera-mode",
+                        choices=["color", "grayscale"],
+                        default="color",
+                        help="Camera mode (color or grayscale)")
 
     parser.add_argument("--rangefinder",
                         type=str,
@@ -72,7 +76,7 @@ def get_args():
                         help="Webots RangeFinder name (optional)")
     parser.add_argument("--rangefinder-fps",
                         type=int,
-                        default=10,
+                        default=30,
                         help="rangefinder FPS. Note lower FPS is faster")
     parser.add_argument("--rangefinder-port",
                         type=int,
@@ -111,6 +115,7 @@ if __name__ == "__main__":
                                 camera_name=args.camera,
                                 camera_fps=args.camera_fps,
                                 camera_stream_port=args.camera_port,
+                                camera_mode=args.camera_mode,
                                 rangefinder_name=args.rangefinder,
                                 rangefinder_fps=args.rangefinder_fps,
                                 rangefinder_stream_port=args.rangefinder_port,
