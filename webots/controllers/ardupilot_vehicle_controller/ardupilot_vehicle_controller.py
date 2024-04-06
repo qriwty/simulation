@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
-import tomllib
+import toml
 from webots_vehicle import WebotsArduVehicle
 
 
 with open("arducopter_configuration.toml", "rb") as configuration_file:
-    configuration = tomllib.load(configuration_file)
+    configuration = toml.load(configuration_file)
 
 
 motor_names = configuration["powerplant"]["names"].split(", ")
