@@ -138,8 +138,7 @@ Iris {
       maxRange 20
     }
     Camera {
-      translation 0.05 0 0.05
-      rotation 0 1 0 0
+      translation 0.1 0
       fieldOfView 1.57
       width 640
       height 480

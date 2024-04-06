@@ -77,10 +77,14 @@ class WebotsArduVehicle():
             gps_name (str, optional): Webots GPS name. Defaults to "gps".
             camera_name (str, optional): Webots camera name. Defaults to None.
             camera_fps (int, optional): Camera FPS. Lower FPS runs better in sim. Defaults to 10.
-            camera_stream_port (int, optional): Port to stream grayscale camera images to.
+            camera_stream_host (str, optional): Host to stream camera images to.
+                                                Defaults to localhost.
+            camera_stream_port (int, optional): Port to stream camera images to.
                                                 If no port is supplied the camera will not be streamed. Defaults to None.
             rangefinder_name (str, optional): Webots RangeFinder name. Defaults to None.
             rangefinder_fps (int, optional): RangeFinder FPS. Lower FPS runs better in sim. Defaults to 10.
+            rangefinder_stream_host (str, optional): Host to stream rangefinder images to.
+                                                     Defaults to localhost.
             rangefinder_stream_port (int, optional): Port to stream rangefinder images to.
                                                      If no port is supplied the camera will not be streamed. Defaults to None.
             instance (int, optional): Vehicle instance number to match the SITL. This allows multiple vehicles. Defaults to 0.
@@ -163,10 +167,10 @@ class WebotsArduVehicle():
         # create a local UDP socket server to listen for SITL
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # SOCK_STREAM
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        s.bind(('0.0.0.0', port))
+        s.bind((sitl_address, port))
 
         # wait for SITL to connect
-        print(f"Listening for ardupilot SITL (I{self._instance}) at 127.0.0.1:{port}")
+        print(f"Listening for ardupilot SITL (I{self._instance}) at {sitl_address}:{port}")
         self.robot.step(self._timestep) # flush print in webots console
 
         while not select.select([s], [], [], 0)[0]: # wait for socket to be readable
