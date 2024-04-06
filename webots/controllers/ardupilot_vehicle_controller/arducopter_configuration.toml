@@ -1,7 +1,7 @@
 [powerplant]
-names = "m1_motor, m2_motor, m3_motor, m4_motor"
-motor_cap = "inf"
-reversed = false
+motors = ["m1_motor", "m2_motor", "m3_motor", "m4_motor"]
+motor_cap = inf
+reversed = []
 bidirectional = false
 uses_propellers = true
 

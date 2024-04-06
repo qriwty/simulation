@@ -4,34 +4,38 @@ import toml
 from webots_vehicle import WebotsArduVehicle
 
 
-with open("arducopter_configuration.toml", "rb") as configuration_file:
-    configuration = toml.load(configuration_file)
+configuration_file = "arducopter_configuration.toml"
+configuration = toml.load(configuration_file)
 
 
-motor_names = configuration["powerplant"]["names"].split(", ")
-motor_cap = float(configuration["powerplant"]["motor_cap"]) if configuration["powerplant"]["motor_cap"] != "inf" else float("inf")
-reversed_motors = configuration["powerplant"]["reversed"]
-bidirectional_motors = configuration["powerplant"]["bidirectional"]
-uses_propellers = configuration["powerplant"]["uses_propellers"]
+def get_configuration_value(section, key, default=None):
+    return configuration.get(section, {}).get(key, default)
 
-accel_name = configuration["sensors"]["accel"]
-imu_name = configuration["sensors"]["imu"]
-gyro_name = configuration["sensors"]["gyro"]
-gps_name = configuration["sensors"]["gps"]
 
-camera_name = configuration["camera"]["name"]
-camera_mode = configuration["camera"]["mode"]
-camera_fps = configuration["camera"]["fps"]
-camera_host = configuration["camera"]["host"]
-camera_port = configuration["camera"]["port"]
+motor_names = get_configuration_value("powerplant", "motors")
+motor_cap = get_configuration_value("powerplant", "motor_cap", float("inf"))
+reversed_motors = get_configuration_value("powerplant", "reversed", False)
+bidirectional_motors = get_configuration_value("powerplant", "bidirectional", False)
+uses_propellers = get_configuration_value("powerplant", "uses_propellers", True)
 
-rangefinder_name = configuration["rangefinder"]["name"]
-rangefinder_fps = configuration["rangefinder"]["fps"]
-rangefinder_host = configuration["rangefinder"]["host"]
-rangefinder_port = configuration["rangefinder"]["port"]
+accel_name = get_configuration_value("sensors", "accel", "accelerometer")
+imu_name = get_configuration_value("sensors", "imu", "inertial unit")
+gyro_name = get_configuration_value("sensors", "gyro", "gyro")
+gps_name = get_configuration_value("sensors", "gps", "gps")
 
-instance = configuration["sitl"]["instance"]
-sitl_address = configuration["sitl"]["sitl_address"]
+camera_name = get_configuration_value("camera", "name", "")
+camera_mode = get_configuration_value("camera", "mode", "color")
+camera_fps = get_configuration_value("camera", "fps", 30)
+camera_host = get_configuration_value("camera", "host", "localhost")
+camera_port = get_configuration_value("camera", "port", None)
+
+rangefinder_name = get_configuration_value("rangefinder", "name", "")
+rangefinder_fps = get_configuration_value("rangefinder", "fps", 30)
+rangefinder_host = get_configuration_value("rangefinder", "host", "localhost")
+rangefinder_port = get_configuration_value("rangefinder", "port", None)
+
+instance = get_configuration_value("sitl", "instance", 0)
+sitl_address = get_configuration_value("sitl", "sitl_address", "127.0.0.1")
 
 
 vehicle = WebotsArduVehicle(
