@@ -60,6 +60,10 @@ def get_args():
                         type=int,
                         default=30,
                         help="Camera FPS. Note lower FPS is faster")
+    parser.add_argument("--camera-host",
+                        type=int,
+                        default="localhost",
+                        help="Host to stream camera images to. ")
     parser.add_argument("--camera-port",
                         type=int,
                         default=None,
@@ -78,6 +82,10 @@ def get_args():
                         type=int,
                         default=30,
                         help="rangefinder FPS. Note lower FPS is faster")
+    parser.add_argument("--rangefinder-host",
+                        type=int,
+                        default="localhost",
+                        help="Host to stream rangefinder images to. ")
     parser.add_argument("--rangefinder-port",
                         type=int,
                         default=None,
@@ -114,10 +122,12 @@ if __name__ == "__main__":
                                 gps_name=args.gps,
                                 camera_name=args.camera,
                                 camera_fps=args.camera_fps,
+                                camera_stream_host=args.camera_host,
                                 camera_stream_port=args.camera_port,
                                 camera_mode=args.camera_mode,
                                 rangefinder_name=args.rangefinder,
                                 rangefinder_fps=args.rangefinder_fps,
+                                rangefinder_stream_host=args.rangefinder_host,
                                 rangefinder_stream_port=args.rangefinder_port,
                                 instance=args.instance,
                                 motor_velocity_cap=args.motor_cap,

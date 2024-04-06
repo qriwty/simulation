@@ -53,11 +53,13 @@ class WebotsArduVehicle():
                  gyro_name: str = "gyro",
                  gps_name: str = "gps",
                  camera_name: str = None,
+                 camera_mode: str = "color",
                  camera_fps: int = 30,
                  camera_stream_port: int = None,
-                 camera_mode: str = "color",
+                 camera_stream_host: int = None,
                  rangefinder_name: str = None,
                  rangefinder_fps: int = 30,
+                 rangefinder_stream_host: int = None,
                  rangefinder_stream_port: int = None,
                  instance: int = 0,
                  motor_velocity_cap: float = float('inf'),
@@ -126,7 +128,7 @@ class WebotsArduVehicle():
             if camera_stream_port is not None:
                 self._camera_thread = Thread(daemon=True,
                                              target=self._handle_image_stream,
-                                             args=[self.camera, camera_stream_port])
+                                             args=[self.camera, camera_stream_host, camera_stream_port])
                 self._camera_thread.start()
 
         # init rangefinder
@@ -138,7 +140,7 @@ class WebotsArduVehicle():
             if rangefinder_stream_port is not None:
                 self._rangefinder_thread = Thread(daemon=True,
                                                   target=self._handle_image_stream,
-                                                  args=[self.rangefinder, rangefinder_stream_port])
+                                                  args=[self.rangefinder, rangefinder_stream_host, rangefinder_stream_port])
                 self._rangefinder_thread.start()
 
         # init motors (and setup velocity control)
@@ -269,7 +271,7 @@ class WebotsArduVehicle():
         for i, m in enumerate(self._motors):
             m.setVelocity(linearized_motor_commands[i] * min(m.getMaxVelocity(), self.motor_velocity_cap))
 
-    def _handle_image_stream(self, camera: Union[Camera, RangeFinder], port: int):
+    def _handle_image_stream(self, camera: Union[Camera, RangeFinder], host: str, port: int):
         """Stream grayscale images over TCP
 
         Args:
@@ -283,13 +285,13 @@ class WebotsArduVehicle():
             cam_sample_period = self.camera.getSamplingPeriod()
             cam_width = self.camera.getWidth()
             cam_height = self.camera.getHeight()
-            print(f"Camera stream started at 127.0.0.1:{port} (I{self._instance}) "
+            print(f"Camera stream started at {host}:{port} (I{self._instance}) "
                   f"({cam_width}x{cam_height} @ {1000/cam_sample_period:0.2f}fps)")
         elif isinstance(camera, RangeFinder):
             cam_sample_period = self.rangefinder.getSamplingPeriod()
             cam_width = self.rangefinder.getWidth()
             cam_height = self.rangefinder.getHeight()
-            print(f"RangeFinder stream started at 127.0.0.1:{port} (I{self._instance}) "
+            print(f"RangeFinder stream started at {host}:{port} (I{self._instance}) "
                   f"({cam_width}x{cam_height} @ {1000/cam_sample_period:0.2f}fps)")
         else:
             print(sys.stderr, f"Error: camera passed to _handle_image_stream is of invalid type "
@@ -299,7 +301,7 @@ class WebotsArduVehicle():
         # create a local TCP socket server
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        server.bind(('127.0.0.1', port))
+        server.bind((host, port))
         server.listen(1)
 
         # continuously send images
