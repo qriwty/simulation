@@ -18,7 +18,7 @@ WorldInfo {
 }
 Viewpoint {
   orientation -0.15488872288352273 -0.8697642574712708 0.4685292092804464 5.885033079753205
-  position -10.274511912275615 3.241691307623931 4.75029174511878
+  position -10.274511912275615 3.241691307623931 4.750291745118808
   follow "Iris"
   followSmoothness 0.01
 }
@@ -118,10 +118,14 @@ Iris {
     "m1_motor, m2_motor, m3_motor, m4_motor"
     "--camera"
     "camera"
+    "--camera-host"
+    "0.0.0.0"
     "--camera-port"
     "5588"
     "--rangefinder"
     "range-finder"
+    "--rangefinder-host"
+    "0.0.0.0"
     "--rangefinder-port"
     "5599"
   ]
