@@ -15,14 +15,14 @@ gps = "gps"
 name = "camera"
 mode = "color"
 fps = 30
-host = "localhost"
+host = "0.0.0.0"
 port = 5588
 
 
 [rangefinder]
 name = "range-finder"
 fps = 30
-host = "localhost"
+host = "0.0.0.0"
 port = 5599
 
 [sitl]
