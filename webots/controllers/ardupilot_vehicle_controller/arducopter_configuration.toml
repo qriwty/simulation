@@ -1,0 +1,30 @@
+[powerplant]
+names = "m1_motor, m2_motor, m3_motor, m4_motor"
+motor_cap = "inf"
+reversed = false
+bidirectional = false
+uses_propellers = true
+
+[sensors]
+accel = "accelerometer"
+imu = "inertial unit"
+gyro = "gyro"
+gps = "gps"
+
+[camera]
+name = "camera"
+mode = "color"
+fps = 30
+host = "localhost"
+port = 5588
+
+
+[rangefinder]
+name = "rangefinder"
+fps = 30
+host = "localhost"
+port = 5599
+
+[sitl]
+instance = 0
+sitl_address = "127.0.0.1"
