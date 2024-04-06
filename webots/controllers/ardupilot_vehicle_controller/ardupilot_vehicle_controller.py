@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import time
 import toml
 from webots_vehicle import WebotsArduVehicle
 
@@ -38,25 +38,29 @@ instance = get_configuration_value("sitl", "instance", 0)
 sitl_address = get_configuration_value("sitl", "sitl_address", "127.0.0.1")
 
 
-vehicle = WebotsArduVehicle(
-    motor_names=motor_names,
-    reversed_motors=reversed_motors,
-    accel_name=accel_name,
-    imu_name=imu_name,
-    gyro_name=gyro_name,
-    gps_name=gps_name,
-    camera_name=camera_name,
-    camera_fps=camera_fps,
-    camera_stream_host=camera_host,
-    camera_stream_port=camera_port,
-    camera_mode=camera_mode,
-    rangefinder_name=rangefinder_name,
-    rangefinder_fps=rangefinder_fps,
-    rangefinder_stream_host=rangefinder_host,
-    rangefinder_stream_port=rangefinder_port,
-    instance=instance,
-    motor_velocity_cap=motor_cap,
-    bidirectional_motors=bidirectional_motors,
-    uses_propellers=uses_propellers,
-    sitl_address=sitl_address
-)
+if __name__ == "__main__":
+    vehicle = WebotsArduVehicle(
+        motor_names=motor_names,
+        reversed_motors=reversed_motors,
+        accel_name=accel_name,
+        imu_name=imu_name,
+        gyro_name=gyro_name,
+        gps_name=gps_name,
+        camera_name=camera_name,
+        camera_fps=camera_fps,
+        camera_stream_host=camera_host,
+        camera_stream_port=camera_port,
+        camera_mode=camera_mode,
+        rangefinder_name=rangefinder_name,
+        rangefinder_fps=rangefinder_fps,
+        rangefinder_stream_host=rangefinder_host,
+        rangefinder_stream_port=rangefinder_port,
+        instance=instance,
+        motor_velocity_cap=motor_cap,
+        bidirectional_motors=bidirectional_motors,
+        uses_propellers=uses_propellers,
+        sitl_address=sitl_address
+    )
+
+    while vehicle.webots_connected():
+        time.sleep(1)
