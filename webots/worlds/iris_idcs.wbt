@@ -113,22 +113,6 @@ AdvertisingBoard {
 Iris {
   translation 0.0702495 1.45039 0.7949816062500001
   controller "ardupilot_vehicle_controller"
-  controllerArgs [
-    "--motors"
-    "m1_motor, m2_motor, m3_motor, m4_motor"
-    "--camera"
-    "camera"
-    "--camera-host"
-    "0.0.0.0"
-    "--camera-port"
-    "5588"
-    "--rangefinder"
-    "range-finder"
-    "--rangefinder-host"
-    "0.0.0.0"
-    "--rangefinder-port"
-    "5599"
-  ]
   extensionSlot [
     RangeFinder {
       translation 0.1 0 0
