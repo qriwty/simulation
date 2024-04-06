@@ -61,7 +61,7 @@ def get_args():
                         default=30,
                         help="Camera FPS. Note lower FPS is faster")
     parser.add_argument("--camera-host",
-                        type=int,
+                        type=str,
                         default="localhost",
                         help="Host to stream camera images to. ")
     parser.add_argument("--camera-port",
@@ -83,7 +83,7 @@ def get_args():
                         default=30,
                         help="rangefinder FPS. Note lower FPS is faster")
     parser.add_argument("--rangefinder-host",
-                        type=int,
+                        type=str,
                         default="localhost",
                         help="Host to stream rangefinder images to. ")
     parser.add_argument("--rangefinder-port",
