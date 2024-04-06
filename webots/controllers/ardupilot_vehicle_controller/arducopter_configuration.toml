@@ -20,7 +20,7 @@ port = 5588
 
 
 [rangefinder]
-name = "rangefinder"
+name = "range-finder"
 fps = 30
 host = "localhost"
 port = 5599
