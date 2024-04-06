@@ -38,7 +38,7 @@ sys.path.append(f"{WEBOTS_HOME}/lib/controller/python")
 from controller import Robot, Camera, RangeFinder # noqa: E401, E402
 
 
-class WebotsArduVehicle():
+class WebotsArduVehicle:
     """Class representing an ArduPilot controlled Webots Vehicle"""
 
     controls_struct_format = 'f'*16
@@ -289,14 +289,22 @@ class WebotsArduVehicle():
             cam_sample_period = self.camera.getSamplingPeriod()
             cam_width = self.camera.getWidth()
             cam_height = self.camera.getHeight()
-            print(f"Camera stream started at {host}:{port} (I{self._instance}) "
-                  f"({cam_width}x{cam_height} @ {1000/cam_sample_period:0.2f}fps)")
+            cam_fov = self.camera.getFov()
+            cam_focal_length = self.camera.getFocalLength()
+            cam_focal_distance = self.camera.getFocalDistance()
+            print(f"Camera stream started at {host}:{port} (I-{self._instance})\n"
+                  f"\t width: {cam_width} | height: {cam_height} | fps: {1000/cam_sample_period:0.2f} "
+                  f"fov: {cam_fov} | focal length: {cam_focal_length} | focal distance {cam_focal_distance}")
         elif isinstance(camera, RangeFinder):
             cam_sample_period = self.rangefinder.getSamplingPeriod()
             cam_width = self.rangefinder.getWidth()
             cam_height = self.rangefinder.getHeight()
-            print(f"RangeFinder stream started at {host}:{port} (I{self._instance}) "
-                  f"({cam_width}x{cam_height} @ {1000/cam_sample_period:0.2f}fps)")
+            cam_fov = self.rangefinder.getFov()
+            cam_min_range = self.rangefinder.getMinRange()
+            cam_max_range = self.rangefinder.getMaxRange()
+            print(f"RangeFinder stream started at {host}:{port} (I-{self._instance})\n"
+                  f"\t width: {cam_width} | height: {cam_height} | fps: {1000/cam_sample_period:0.2f} "
+                  f"fov: {cam_fov} | min range: {cam_min_range} | max range: {cam_max_range}")
         else:
             print(sys.stderr, f"Error: camera passed to _handle_image_stream is of invalid type "
                               f"'{type(camera)}' (I{self._instance})")
