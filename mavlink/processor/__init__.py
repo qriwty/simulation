@@ -14,8 +14,8 @@ class DataProcessor(ABC):
 
 
 class LocalPositionProcessor:
-    def __init__(self, queue):
-        self.queue = queue
+    def __init__(self):
+        self.queue = QueuePipe()
 
     def add_data(self, data):
         format_data = LocalPosition.from_mavlink(data)
@@ -82,8 +82,8 @@ class GlobalPositionProcessor:
 
 
 class AttitudeProcessor:
-    def __init__(self, queue):
-        self.queue = queue
+    def __init__(self):
+        self.queue = QueuePipe()
 
     def add_data(self, data):
         format_data = Attitude.from_mavlink(data)

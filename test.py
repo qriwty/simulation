@@ -9,11 +9,8 @@ mavlink_connection = MAVLinkHandler("udp:0.0.0.0:14551")
 
 print("CONNECTED")
 
-position_pipe = QueuePipe()
-attitude_pipe = QueuePipe()
-
-position_processor = LocalPositionProcessor(position_pipe)
-attitude_processor = AttitudeProcessor(attitude_pipe)
+position_processor = LocalPositionProcessor()
+attitude_processor = AttitudeProcessor()
 
 position_acquisition_thread = DataAcquisitionThread(mavlink_connection, "LOCAL_POSITION_NED", position_processor)
 attitude_acquisition_thread = DataAcquisitionThread(mavlink_connection, "ATTITUDE", attitude_processor)
@@ -33,7 +30,7 @@ while True:
     execution_time = end_time - start_time
 
     print(f"Результат функции: \n"
-          f"\t {attitude_pipe.size()} | {position_pipe.size()}\n"
+          f"\t {attitude_processor.queue.size()} | {position_processor.queue.size()}\n"
           f"\t {attitude} \n"
           f"\t {position} \n"
           f"Время выполнения: {execution_time} сек.")
