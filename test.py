@@ -1,7 +1,6 @@
 import time
 
-from mavlink.data import QueuePipe
-from mavlink.connection import MAVLinkHandler, DataAcquisitionThread
+from mavlink import MAVLinkHandler, DataAcquisitionThread
 from mavlink.processor import LocalPositionProcessor, AttitudeProcessor
 
 
