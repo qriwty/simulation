@@ -9,6 +9,7 @@ readme = "README.md"
 python = "^3.11"
 numpy = "^1.26.4"
 toml = "^0.10.2"
+pymavlink = "^2.4.41"
 
 
 [build-system]
