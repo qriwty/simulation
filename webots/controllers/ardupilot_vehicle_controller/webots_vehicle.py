@@ -250,7 +250,8 @@ class WebotsArduVehicle:
             command (tuple): tuple of motor speeds 0.0-1.0 where -1.0 is unused
         """
 
-        print(f"Controls {command}", end="\r")
+        roll, tilt, pan = command[len(self._motors):len(self._motors) + 3]
+        print(f"ROLL: {roll} | TILT {tilt} | PAN {pan}")
 
         # get only the number of motors we have
         command_motors = command[:len(self._motors)]
