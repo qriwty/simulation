@@ -250,6 +250,8 @@ class WebotsArduVehicle:
             command (tuple): tuple of motor speeds 0.0-1.0 where -1.0 is unused
         """
 
+        print(f"Controls {command}", end="\r")
+
         # get only the number of motors we have
         command_motors = command[:len(self._motors)]
         if -1 in command_motors:
@@ -292,7 +294,7 @@ class WebotsArduVehicle:
             cam_fov = self.camera.getFov()
             cam_focal_length = self.camera.getFocalLength()
             cam_focal_distance = self.camera.getFocalDistance()
-            print(f"Camera stream started at {host}:{port} (I-{self._instance})\n"
+            print(f"\nCamera stream started at {host}:{port} (I-{self._instance})\n"
                   f"\t width: {cam_width} | height: {cam_height} | fps: {1000/cam_sample_period:0.2f} | "
                   f"fov: {cam_fov} | focal length: {cam_focal_length} | focal distance {cam_focal_distance}")
         elif isinstance(camera, RangeFinder):
@@ -302,7 +304,7 @@ class WebotsArduVehicle:
             cam_fov = self.rangefinder.getFov()
             cam_min_range = self.rangefinder.getMinRange()
             cam_max_range = self.rangefinder.getMaxRange()
-            print(f"RangeFinder stream started at {host}:{port} (I-{self._instance})\n"
+            print(f"\nRangeFinder stream started at {host}:{port} (I-{self._instance})\n"
                   f"\t width: {cam_width} | height: {cam_height} | fps: {1000/cam_sample_period:0.2f} | "
                   f"fov: {cam_fov} | min range: {cam_min_range} | max range: {cam_max_range}")
         else:

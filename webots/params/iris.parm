@@ -21,3 +21,8 @@ ARMING_CHECK	 1045534    # No RC requirements
 MOT_THST_EXPO    0          # No motor exponential
 SCHED_LOOP_RATE  300        
 INS_GYR_CAL      0
+
+MNT1_TYPE        1          # Gimbal
+SERVO5_FUNCTION  8
+SERVO6_FUNCTION  7
+SERVO7_FUNCTION  6
