@@ -1,1 +1,1 @@
-python Tools/autotest/sim_vehicle.py -v ArduCopter -w --model webots-python --add-param-file=../webots/params/iris.parm
+python ardupilot/Tools/autotest/sim_vehicle.py -v ArduCopter -w --model webots-python --add-param-file=webots/params/iris.parm

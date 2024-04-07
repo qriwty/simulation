@@ -170,7 +170,7 @@ class WebotsArduVehicle:
         s.bind((sitl_address, port))
 
         # wait for SITL to connect
-        print(f"Listening for ardupilot SITL (I{self._instance}) at {sitl_address}:{port}")
+        print(f"Listening for ardupilot SITL (I-{self._instance}) at {sitl_address}:{port}")
         self.robot.step(self._timestep) # flush print in webots console
 
         while not select.select([s], [], [], 0)[0]: # wait for socket to be readable
@@ -180,7 +180,7 @@ class WebotsArduVehicle:
                 self._webots_connected = False
                 return
 
-        print(f"Connected to ardupilot SITL (I{self._instance})")
+        print(f"Connected to ardupilot SITL (I-{self._instance})")
 
         # main loop handling communications
         while True:
@@ -210,7 +210,7 @@ class WebotsArduVehicle:
         # if we leave the main loop then Webots must have closed
         s.close()
         self._webots_connected = False
-        print(f"Lost connection to Webots (I{self._instance})")
+        print(f"Lost connection to Webots (I-{self._instance})")
 
     def _get_fdm_struct(self) -> bytes:
         """Form the Flight Dynamics Model struct (aka sensor data) to send to the SITL
@@ -254,7 +254,7 @@ class WebotsArduVehicle:
         command_motors = command[:len(self._motors)]
         if -1 in command_motors:
             print(f"Warning: SITL provided {command.index(-1)} motors "
-                  f"but model specifies {len(self._motors)} (I{self._instance})")
+                  f"but model specifies {len(self._motors)} (I-{self._instance})")
 
         # scale commands to -1.0-1.0 if the motors are bidirectional (ex rover wheels)
         if self._bidirectional_motors:
@@ -293,7 +293,7 @@ class WebotsArduVehicle:
             cam_focal_length = self.camera.getFocalLength()
             cam_focal_distance = self.camera.getFocalDistance()
             print(f"Camera stream started at {host}:{port} (I-{self._instance})\n"
-                  f"\t width: {cam_width} | height: {cam_height} | fps: {1000/cam_sample_period:0.2f} "
+                  f"\t width: {cam_width} | height: {cam_height} | fps: {1000/cam_sample_period:0.2f} | "
                   f"fov: {cam_fov} | focal length: {cam_focal_length} | focal distance {cam_focal_distance}")
         elif isinstance(camera, RangeFinder):
             cam_sample_period = self.rangefinder.getSamplingPeriod()
@@ -303,11 +303,11 @@ class WebotsArduVehicle:
             cam_min_range = self.rangefinder.getMinRange()
             cam_max_range = self.rangefinder.getMaxRange()
             print(f"RangeFinder stream started at {host}:{port} (I-{self._instance})\n"
-                  f"\t width: {cam_width} | height: {cam_height} | fps: {1000/cam_sample_period:0.2f} "
+                  f"\t width: {cam_width} | height: {cam_height} | fps: {1000/cam_sample_period:0.2f} | "
                   f"fov: {cam_fov} | min range: {cam_min_range} | max range: {cam_max_range}")
         else:
             print(sys.stderr, f"Error: camera passed to _handle_image_stream is of invalid type "
-                              f"'{type(camera)}' (I{self._instance})")
+                              f"'{type(camera)}' (I-{self._instance})")
             return
 
         # create a local TCP socket server
@@ -320,7 +320,7 @@ class WebotsArduVehicle:
         while self._webots_connected:
             # wait for incoming connection
             conn, _ = server.accept()
-            print(f"Connected to camera client (I{self._instance})")
+            print(f"Connected to camera client (I-{self._instance})")
 
             # send images to client
             try:
@@ -339,7 +339,7 @@ class WebotsArduVehicle:
                         img = self.get_rangefinder_image()
 
                     if img is None:
-                        print(f"No image received (I{self._instance})")
+                        print(f"No image received (I-{self._instance})")
                         time.sleep(cam_sample_period/1000)
                         continue
 
@@ -360,7 +360,7 @@ class WebotsArduVehicle:
                 pass
             finally:
                 conn.close()
-                print(f"Camera client disconnected (I{self._instance})")
+                print(f"Camera client disconnected (I-{self._instance})")
 
     def get_camera_gray_image(self) -> np.ndarray:
         """Get the grayscale image from the camera as a numpy array of bytes"""
