@@ -35,7 +35,7 @@ else:
 os.environ["PYTHONIOENCODING"] = "UTF-8"
 sys.path.append(f"{WEBOTS_HOME}/lib/controller/python")
 
-from controller import Robot, Camera, RangeFinder # noqa: E401, E402
+from controller import Robot, Camera, RangeFinder
 
 
 class WebotsArduVehicle:
@@ -135,17 +135,17 @@ class WebotsArduVehicle:
                                              args=[self.camera, camera_stream_host, camera_stream_port])
                 self._camera_thread.start()
 
-        # init rangefinder
-        if rangefinder_name is not None:
-            self.rangefinder = self.robot.getDevice(rangefinder_name)
-            self.rangefinder.enable(1000//rangefinder_fps) # takes frame period in ms
-
-            # start rangefinder streaming thread if requested
-            if rangefinder_stream_port is not None:
-                self._rangefinder_thread = Thread(daemon=True,
-                                                  target=self._handle_image_stream,
-                                                  args=[self.rangefinder, rangefinder_stream_host, rangefinder_stream_port])
-                self._rangefinder_thread.start()
+        # # init rangefinder
+        # if rangefinder_name is not None:
+        #     self.rangefinder = self.robot.getDevice(rangefinder_name)
+        #     self.rangefinder.enable(1000//rangefinder_fps) # takes frame period in ms
+        #
+        #     # start rangefinder streaming thread if requested
+        #     if rangefinder_stream_port is not None:
+        #         self._rangefinder_thread = Thread(daemon=True,
+        #                                           target=self._handle_image_stream,
+        #                                           args=[self.rangefinder, rangefinder_stream_host, rangefinder_stream_port])
+        #         self._rangefinder_thread.start()
 
         # init motors (and setup velocity control)
         self._motors = [self.robot.getDevice(n) for n in motor_names]

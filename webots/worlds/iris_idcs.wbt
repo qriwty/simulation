@@ -10,6 +10,7 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/project
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/advertising_board/protos/AdvertisingBoard.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/tables/protos/Table.proto"
 EXTERNPROTO "../protos/Iris.proto"
+EXTERNPROTO "../protos/Mavic2Pro.proto"
 
 WorldInfo {
   title "Iris Ardupilot"
@@ -18,8 +19,7 @@ WorldInfo {
 }
 Viewpoint {
   orientation -0.15488872288352273 -0.8697642574712708 0.4685292092804464 5.885033079753205
-  position -10.274511912275615 3.241691307623931 4.750291745118808
-  follow "Iris"
+  position -7.324108725779209 2.6950930318612234 3.654984306983507
   followSmoothness 0.01
 }
 TexturedBackground {
@@ -129,4 +129,19 @@ Iris {
       height 480
     }
   ]
+}
+Mavic2Pro {
+  hidden position_0_0 1.8114854200551253e-10
+  hidden linearVelocity_0 -9.43599719873195e-12 7.551680956216535e-15 1.89159599277651e-11
+  hidden angularVelocity_0 -3.5916500296446846e-13 -4.609607975762895e-10 7.774975983380418e-16
+  hidden position_6_0 -1.127930637778718e-09
+  hidden linearVelocity_6 -2.1844143678582643e-11 6.386641906300485e-14 7.636340776585688e-11
+  hidden angularVelocity_6 -3.506403970382242e-11 -4.609606852504219e-10 4.975691337222745e-10
+  hidden position_7_0 -1.4798193837721138e-10
+  hidden linearVelocity_7 -2.377157689163013e-11 -9.084663388276748e-13 7.295290972155882e-11
+  hidden angularVelocity_7 -3.50195542457023e-11 -1.3709702652139152e-09 4.975686458492545e-10
+  hidden linearVelocity_8 -1.6075676564107457e-11 -1.838627668176992e-12 7.46250676342185e-11
+  hidden angularVelocity_8 -1.511258755386986e-09 -1.3710430379650422e-09 3.9460544177442577e-10
+  translation -0.005367393963028877 -1.0699995815795125 0.06574841112645721
+  rotation 2.672952389994893e-05 -0.999999747755977 0.0007097700437731232 0.06963420504944158
 }
