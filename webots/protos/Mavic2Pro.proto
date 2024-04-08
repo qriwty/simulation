@@ -829,9 +829,13 @@ Robot {
   }
   physics Physics {
     density -1
-    mass 0.4
+    mass 1.5
     centerOfMass [
       -0.088 0 -0.04
+    ]
+    inertiaMatrix [
+        2.912500e-02 2.912500e-02 5.522500e-02
+        0.000000e+00 0.000000e+00 0.000000e+00
     ]
   }
   controller IS controller
