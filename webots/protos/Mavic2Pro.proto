@@ -26,6 +26,12 @@ PROTO Mavic2Pro [
 Robot {
   translation IS translation
   rotation IS rotation
+  controller IS controller
+  controllerArgs IS controllerArgs
+  customData IS customData
+  supervisor IS supervisor
+  synchronization IS synchronization
+  name IS name
   children [
     DEF BODY_SLOT Group {
       children IS bodySlot
@@ -71,13 +77,13 @@ Robot {
     }
     DEF REAR_LEFT_HP_HELIX Propeller {
       shaftAxis 0 0 1
-      centerOfThrust -0.177179 0.127453 -0.0320282
-      thrustConstants -0.00026 0
-      torqueConstants 0.0000052 0
+      centerOfThrust 0.130000 -0.220000 0.023000
+      thrustConstants 0.0012 0
+      torqueConstants 5.0e-04 0
       fastHelixThreshold 50
       device RotationalMotor {
         name "rear left propeller"
-        maxVelocity 576
+        maxVelocity 100
         maxTorque 30.0
       }
       fastHelix Solid {
@@ -133,7 +139,7 @@ Robot {
         }
         physics Physics {
           density -1
-          mass 0.1
+          mass 0.01
         }
       }
       slowHelix Solid {
@@ -185,19 +191,19 @@ Robot {
         }
         physics Physics {
           density -1
-          mass 0.1
+          mass 0.01
         }
       }
     }
     DEF REAR_RIGHT_HP_HELIX Propeller {
       shaftAxis 0 0 1
-      centerOfThrust -0.177179 -0.127453 -0.0320282
-      thrustConstants 0.00026 0
-      torqueConstants 0.0000052 0
+      centerOfThrust -0.130000 0.200000 0.023000
+      thrustConstants 0.0012 0
+      torqueConstants 5.0e-04 0
       fastHelixThreshold 50
       device RotationalMotor {
         name "rear right propeller"
-        maxVelocity 576
+        maxVelocity 100
         maxTorque 30.0
       }
       fastHelix Solid {
@@ -253,7 +259,7 @@ Robot {
         }
         physics Physics {
           density -1
-          mass 0.1
+          mass 0.01
         }
       }
       slowHelix Solid {
@@ -307,19 +313,19 @@ Robot {
         }
         physics Physics {
           density -1
-          mass 0.1
+          mass 0.01
         }
       }
     }
     DEF FRONT_RIGHT_HP_HELIX Propeller {
       shaftAxis 0 0 1
-      centerOfThrust 0.0548537 -0.151294 -0.00280468
-      thrustConstants -0.00026 0
-      torqueConstants 0.0000052 0
+      centerOfThrust 00.130000 0.220000 0.023000
+      thrustConstants -0.0012 0
+      torqueConstants 5.0e-04 0
       fastHelixThreshold 50
       device RotationalMotor {
         name "front right propeller"
-        maxVelocity 576
+        maxVelocity 100
         maxTorque 30.0
       }
       fastHelix Solid {
@@ -375,7 +381,7 @@ Robot {
         }
         physics Physics {
           density -1
-          mass 0.1
+          mass 0.01
         }
       }
       slowHelix Solid {
@@ -429,7 +435,7 @@ Robot {
         }
         physics Physics {
           density -1
-          mass 0.1
+          mass 0.01
         }
       }
     }
@@ -527,7 +533,7 @@ Robot {
                     }
                     physics Physics {
                       density -1
-                      mass 0.0333
+                      mass 0.001
                     }
                   }
                 }
@@ -543,7 +549,7 @@ Robot {
               }
               physics Physics {
                 density -1
-                mass 0.0333
+                mass 0.001
               }
             }
           }
@@ -559,7 +565,7 @@ Robot {
         }
         physics Physics {
           density -1
-          mass 0.0333
+          mass 0.001
         }
       }
     }
@@ -592,7 +598,7 @@ Robot {
       }
       physics Physics {
         density -1
-        mass 0.0035
+        mass 0.001
       }
     }
     DEF LED_LEFT LED {
@@ -625,18 +631,18 @@ Robot {
       }
       physics Physics {
         density -1
-        mass 0.0035
+        mass 0.001
       }
     }
     DEF FRONT_LEFT_HP_HELIX Propeller {
       shaftAxis 0 0 1
-      centerOfThrust 0.0548537 0.151294 -0.00280468
-      thrustConstants 0.00026 0
-      torqueConstants 0.0000052 0
+      centerOfThrust -0.130000 -0.200000 0.023000
+      thrustConstants -0.0012 0
+      torqueConstants 5.0e-04 0
       fastHelixThreshold 50
       device RotationalMotor {
         name "front left propeller"
-        maxVelocity 576
+        maxVelocity 100
         maxTorque 30.0
       }
       fastHelix Solid {
@@ -692,7 +698,7 @@ Robot {
         }
         physics Physics {
           density -1
-          mass 0.1
+          mass 0.01
         }
       }
       slowHelix Solid {
@@ -746,7 +752,7 @@ Robot {
         }
         physics Physics {
           density -1
-          mass 0.1
+          mass 0.01
         }
       }
     }
