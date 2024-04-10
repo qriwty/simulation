@@ -150,6 +150,29 @@ class WebotsArduVehicle:
                                                   args=[self.rangefinder, rangefinder_stream_host, rangefinder_stream_port])
                 self._rangefinder_thread.start()
 
+        self.gimbal_roll = self.robot.getDevice(gimbal_roll)
+        self.gimbal_pitch = self.robot.getDevice(gimbal_pitch)
+        self.gimbal_yaw = self.robot.getDevice(gimbal_yaw)
+
+        print(
+            f"GIMBAL ROLL:\n"
+            f"\ttarget position: {self.gimbal_roll.getTargetPosition()}\n"
+            f"\tmin position: {self.gimbal_roll.getMinPosition()}\n"
+            f"\tmax position: {self.gimbal_roll.getMaxPosition()}\n"
+        )
+        print(
+            f"GIMBAL PITCH:\n"
+            f"\ttarget position: {self.gimbal_pitch.getTargetPosition()}\n"
+            f"\tmin position: {self.gimbal_pitch.getMinPosition()}\n"
+            f"\tmax position: {self.gimbal_pitch.getMaxPosition()}\n"
+        )
+        print(
+            f"GIMBAL YAW:\n"
+            f"\ttarget position: {self.gimbal_yaw.getTargetPosition()}\n"
+            f"\tmin position: {self.gimbal_yaw.getMinPosition()}\n"
+            f"\tmax position: {self.gimbal_yaw.getMaxPosition()}\n"
+        )
+
         # init motors (and setup velocity control)
         self._motors = [self.robot.getDevice(n) for n in motor_names]
         for m in self._motors:
