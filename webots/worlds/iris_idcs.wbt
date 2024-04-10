@@ -9,8 +9,7 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/project
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/buildings/protos/Warehouse.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/advertising_board/protos/AdvertisingBoard.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/tables/protos/Table.proto"
-EXTERNPROTO "../protos/Iris.proto"
-EXTERNPROTO "../protos/Mavic2Pro.proto"
+
 
 WorldInfo {
   title "Iris Ardupilot"
@@ -49,30 +48,6 @@ Warehouse {
   name "warehouse(1)"
 }
 Pedestrian {
-  hidden translation_2 -0.07032771619839352 1.1102230246251565e-16 0.009554532730007198
-  hidden rotation_2 0 1 0 0.37522727272727163
-  hidden translation_3 -0.03817387906804057 1.1102230246251565e-16 0.008471647098755558
-  hidden rotation_3 0 -1 0 0.3996818181818179
-  hidden translation_4 -0.026082786829047796 -5.551115123125783e-17 0.0015447258531116614
-  hidden rotation_4 0 -1 0 0.07031818181817986
-  hidden translation_5 0.0675013788181963 1.6653345369377348e-16 0.016237126286198666
-  hidden rotation_5 0 -0.9999999999999999 0 0.36695454545454353
-  hidden translation_6 -0.00603958510159297 0 0.0024483110712578415
-  hidden rotation_6 0 -1 0 0.06618181818181654
-  hidden translation_7 0.025926460272500382 -5.551115123125783e-17 -0.0033762603994887397
-  hidden rotation_7 0 1 0 0.07036363636363888
-  hidden translation_8 -0.08408342367220165 2.7755575615628914e-17 -0.0005727938925102483
-  hidden rotation_8 0 -1 0 0.2787272727272708
-  hidden translation_9 0.355815388776468 8.326672684688674e-17 -0.10452575505725425
-  hidden rotation_9 0 1 0 0.492545454545451
-  hidden translation_11 -0.19600520882674058 -2.7755575615628914e-17 -0.04065009192420166
-  hidden rotation_11 0 -1 0 0.6740909090909106
-  hidden translation_12 0.7293614509231878 -8.326672684688674e-17 -0.716754342971456
-  hidden rotation_12 0 1 0 1.4744545454545461
-  hidden translation_13 0.0812581091715274 0 -0.009287826659982068
-  hidden rotation_13 0 1 0 0.06999999999999902
-  hidden translation_14 -0.05254487699261918 0 0.005187529870512575
-  hidden rotation_14 0 1 0 0.14277272727272744
   translation 5.675616554308785 1.8243834456912147 1.274818181818182
   rotation 0 0 1 -0.7853981633974483
   controllerArgs [
@@ -110,38 +85,293 @@ AdvertisingBoard {
   poleType "H-shape"
   poleHeight 13
 }
-Iris {
-  translation 0.0702495 1.45039 0.7949816062500001
-  controller "ardupilot_vehicle_controller"
-  extensionSlot [
-    RangeFinder {
-      translation 0.1 0 0
-      fieldOfView 1.57
-      width 640
-      height 480
-      maxRange 20
+Robot {
+  translation 2.287269709546407 0.21189346720593275 0.05498160624999999
+  rotation 2.822609118148114e-21 -1.9325817409233463e-20 -1 0.44561700000000004
+  children [
+    DEF CAMERA_YAW HingeJoint {
+      jointParameters HingeJointParameters {
+        axis 0 0 1
+        anchor 0.0412774 -0.00469654 -0.00405862
+      }
+      device [
+        RotationalMotor {
+          name "camera yaw"
+          minPosition -1.7
+          maxPosition 1.7
+        }
+        PositionSensor {
+          name "camera yaw sensor"
+        }
+      ]
+      endPoint Solid {
+        translation 0.08127700000000003 -0.004696540261830201 -0.014058599999999699
+        children [
+          Shape {
+            appearance DEF METAL_APPEARANCE PBRAppearance {
+              roughness 0.5
+            }
+            geometry Mesh {
+              url [
+                "/home/arthur/Desktop/simulation/webots/protos/meshes/camera_yaw.obj"
+              ]
+            }
+          }
+          DEF CAMERA_PITCH HingeJoint {
+            jointParameters HingeJointParameters {
+              position -0.082
+              axis 0 1 0
+              anchor 0.000625212 -0.00530346 -0.0207448
+            }
+            device [
+              RotationalMotor {
+                name "camera pitch"
+                minPosition -0.5
+                maxPosition 1.7
+              }
+              PositionSensor {
+                name "camera pitch sensor"
+              }
+            ]
+            endPoint Solid {
+              translation 0.0006252119999999681 -0.0053034599999999266 -0.020744800000000122
+              rotation 0 -1 0 0.08199999999999856
+              children [
+                Shape {
+                  appearance USE METAL_APPEARANCE
+                  geometry Mesh {
+                    url [
+                      "/home/arthur/Desktop/simulation/webots/protos/meshes/camera_pitch.obj"
+                    ]
+                  }
+                }
+                DEF CAMERA_ROLL HingeJoint {
+                  jointParameters HingeJointParameters {
+                    position 0.01
+                    anchor 0.00754686 0.0160388 -0.00586401
+                  }
+                  device [
+                    RotationalMotor {
+                      name "camera roll"
+                      minPosition -0.5
+                      maxPosition 0.5
+                    }
+                    PositionSensor {
+                      name "camera roll sensor"
+                    }
+                  ]
+                  endPoint Solid {
+                    translation 0.007546860000000044 0.016038800000000242 -0.005864010000000028
+                    rotation 1 0 0 0.01000000000000101
+                    children [
+                      Shape {
+                        appearance USE METAL_APPEARANCE
+                        geometry Mesh {
+                          url [
+                            "/home/arthur/Desktop/simulation/webots/protos/meshes/camera_chassis.obj"
+                          ]
+                        }
+                      }
+                      Shape {
+                        appearance DEF GLASS PBRAppearance {
+                          baseColor 0.523146 0.8 0.627785
+                          transparency 0.9
+                          roughness 0.5
+                          metalness 0
+                        }
+                        geometry Mesh {
+                          url [
+                            "/home/arthur/Desktop/simulation/webots/protos/meshes/camera_lens.obj"
+                          ]
+                        }
+                      }
+                      DEF CAMERA_SLOT Pose {
+                        children [
+                          RangeFinder {
+                            width 320
+                            height 240
+                            maxRange 20
+                          }
+                          Camera {
+                            width 400
+                            height 240
+                          }
+                        ]
+                      }
+                    ]
+                    name "camera roll"
+                    boundingObject Pose {
+                      translation -0.00915058 -1.86265e-08 -0.000983764
+                      children [
+                        Box {
+                          size 0.0236511 0.0205141 0.0225186
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+              name "camera pitch"
+              boundingObject Pose {
+                translation -0.00248347 0.00776876 0.00183829
+                children [
+                  Box {
+                    size 0.0239878 0.0349393 0.0314891
+                  }
+                ]
+              }
+            }
+          }
+        ]
+        name "camera yaw"
+        boundingObject Pose {
+          translation -1.86265e-09 -0.00304481 -0.0140589
+          children [
+            Box {
+              size 0.0208626 0.0260333 0.0307844
+            }
+          ]
+        }
+      }
     }
-    Camera {
-      translation 0.1 0 0
-      rotation 0 1 0 0
-      fieldOfView 1.57
-      width 640
-      height 480
+    DEF IRIS_MESH Shape {
+      appearance PBRAppearance {
+        baseColor 0.05 0.05 0.05
+        roughness 1
+        metalness 0.2
+      }
+      geometry Mesh {
+        url [
+          "/home/arthur/Desktop/simulation/webots/protos/meshes/iris.dae"
+        ]
+      }
+      castShadows FALSE
+    }
+    Propeller {
+      shaftAxis 0 0 1
+      centerOfThrust 0.13 -0.22 0.023
+      thrustConstants 0.0012 0
+      torqueConstants 0.0005 0
+      device RotationalMotor {
+        name "m1_motor"
+        maxVelocity 100
+        maxTorque 30
+      }
+      slowHelix Solid {
+        translation 0.13 -0.22 0.023
+        rotation 0 0 1 4.886831309026521
+        children [
+          Shape {
+            appearance DEF PROP_BLUE PBRAppearance {
+              baseColor 0 0 0.75
+              metalness 0.3
+            }
+            geometry DEF CCW_PROP Mesh {
+              url [
+                "/home/arthur/Desktop/simulation/webots/protos/meshes/iris_prop_ccw.dae"
+              ]
+            }
+          }
+        ]
+      }
+    }
+    Propeller {
+      shaftAxis 0 0 1
+      centerOfThrust -0.13 0.2 0.023
+      thrustConstants 0.0012 0
+      torqueConstants 0.0005 0
+      device RotationalMotor {
+        name "m2_motor"
+        maxVelocity 100
+        maxTorque 30
+      }
+      slowHelix Solid {
+        translation -0.13 0.2 0.023
+        rotation 0 0 1 4.8658114879349075
+        children [
+          Shape {
+            appearance DEF PROP_BLACK PBRAppearance {
+              baseColor 0 0 0
+              metalness 0.3
+            }
+            geometry USE CCW_PROP
+          }
+        ]
+      }
+    }
+    Propeller {
+      shaftAxis 0 0 1
+      centerOfThrust 0.13 0.22 0.023
+      thrustConstants -0.0012 0
+      torqueConstants 0.0005 0
+      device RotationalMotor {
+        name "m3_motor"
+        maxVelocity 100
+        maxTorque 30
+        multiplier -1
+      }
+      slowHelix Solid {
+        translation 0.13 0.22 0.023
+        rotation 0 0 -1 4.8340204920809535
+        children [
+          Shape {
+            appearance USE PROP_BLUE
+            geometry DEF CW_PROP Mesh {
+              url [
+                "/home/arthur/Desktop/simulation/webots/protos/meshes/iris_prop_cw.dae"
+              ]
+            }
+          }
+        ]
+      }
+    }
+    Propeller {
+      shaftAxis 0 0 1
+      centerOfThrust -0.13 -0.2 0.023
+      thrustConstants -0.0012 0
+      torqueConstants 0.0005 0
+      device RotationalMotor {
+        name "m4_motor"
+        maxVelocity 100
+        maxTorque 30
+        multiplier -1
+      }
+      slowHelix Solid {
+        translation -0.13 -0.2 0.023
+        rotation 0 0 -1 4.894446474265779
+        children [
+          Shape {
+            appearance USE PROP_BLACK
+            geometry USE CW_PROP
+          }
+        ]
+      }
+    }
+    Accelerometer {
+    }
+    GPS {
+    }
+    Gyro {
+    }
+    InertialUnit {
     }
   ]
-}
-Mavic2Pro {
-  hidden position_0_0 1.8114854200551253e-10
-  hidden linearVelocity_0 -9.43599719873195e-12 7.551680956216535e-15 1.89159599277651e-11
-  hidden angularVelocity_0 -3.5916500296446846e-13 -4.609607975762895e-10 7.774975983380418e-16
-  hidden position_6_0 -1.127930637778718e-09
-  hidden linearVelocity_6 -2.1844143678582643e-11 6.386641906300485e-14 7.636340776585688e-11
-  hidden angularVelocity_6 -3.506403970382242e-11 -4.609606852504219e-10 4.975691337222745e-10
-  hidden position_7_0 -1.4798193837721138e-10
-  hidden linearVelocity_7 -2.377157689163013e-11 -9.084663388276748e-13 7.295290972155882e-11
-  hidden angularVelocity_7 -3.50195542457023e-11 -1.3709702652139152e-09 4.975686458492545e-10
-  hidden linearVelocity_8 -1.6075676564107457e-11 -1.838627668176992e-12 7.46250676342185e-11
-  hidden angularVelocity_8 -1.511258755386986e-09 -1.3710430379650422e-09 3.9460544177442577e-10
-  translation -0.005367393963028877 -1.0699995815795125 0.06574841112645721
-  rotation 2.672952389994893e-05 -0.999999747755977 0.0007097700437731232 0.06963420504944158
+  name "Iris"
+  boundingObject Box {
+    size 0.47 0.47 0.11
+  }
+  physics Physics {
+    density -1
+    mass 1.5
+    centerOfMass [
+      0 0 0
+    ]
+    inertiaMatrix [
+      0.029125 0.029125 0.055225
+      0 0 0
+    ]
+  }
+  controller "ardupilot_vehicle_controller"
+  linearVelocity 7.602132869149125e-19 7.755548745148268e-20 2.394529019511662e-15
+  angularVelocity 5.717886822101866e-18 3.8119245480692224e-18 1.8562931687736606e-19
 }
