@@ -285,7 +285,7 @@ class WebotsArduVehicle:
                            gps_pos[0], -gps_pos[1], -gps_pos[2])
 
     def clamp(self, value, input_range, target_range, default_value=0):
-        if value not in input_range:
+        if value < input_range[0] or value > input_range[1]:
             return default_value
 
         normalized_value = (
@@ -297,20 +297,23 @@ class WebotsArduVehicle:
     def _handle_gimbal(self, command: tuple):
         roll_command, pitch_command, yaw_command = command
 
+        roll_range = [self.gimbal_roll.getMinPosition(), self.gimbal_roll.getMaxPosition()]
         roll_value = self.clamp(
             roll_command,
             input_range=[0, 1],
-            target_range=[self.gimbal_roll.getMinPosition(), self.gimbal_roll.getMinPosition()]
+            target_range=roll_range
         )
+        pitch_range = [self.gimbal_pitch.getMinPosition(), self.gimbal_pitch.getMaxPosition()]
         pitch_value = self.clamp(
             pitch_command,
             input_range=[0, 1],
-            target_range=[self.gimbal_pitch.getMinPosition(), self.gimbal_pitch.getMinPosition()]
+            target_range=pitch_range
         )
+        yaw_range = [self.gimbal_yaw.getMinPosition(), self.gimbal_yaw.getMaxPosition()]
         yaw_value = self.clamp(
             yaw_command,
             input_range=[0, 1],
-            target_range=[self.gimbal_yaw.getMinPosition(), self.gimbal_yaw.getMinPosition()]
+            target_range=yaw_range
         )
 
         self.gimbal_roll.setPosition(roll_value)
