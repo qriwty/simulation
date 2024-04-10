@@ -11,13 +11,17 @@ imu = "inertial unit"
 gyro = "gyro"
 gps = "gps"
 
+[gimbal]
+roll = "camera roll"
+pitch = "camera pitch"
+yaw = "camera yaw"
+
 [camera]
 name = "camera"
 mode = "color"
 fps = 30
 host = "0.0.0.0"
 port = 5588
-
 
 [rangefinder]
 name = "range-finder"
