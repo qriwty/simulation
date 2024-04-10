@@ -305,23 +305,20 @@ class WebotsArduVehicle:
     def _handle_gimbal(self, command: tuple):
         roll_command, pitch_command, yaw_command = command
 
-        roll_range = [self.gimbal_roll.getMinPosition(), 0, self.gimbal_roll.getMaxPosition()]
         roll_value = self.clamp(
             roll_command,
             input_range=[0, 0.5, 1],
-            target_range=roll_range
+            target_range=[self.gimbal_roll.getMinPosition(), 0, self.gimbal_roll.getMaxPosition()]
         )
-        pitch_range = [self.gimbal_pitch.getMinPosition(), 0, self.gimbal_pitch.getMaxPosition()]
         pitch_value = self.clamp(
             pitch_command,
-            input_range=[0, 0.5, 1],
-            target_range=pitch_range
+            input_range=[0, 0.75, 1],
+            target_range=[self.gimbal_pitch.getMinPosition(), 0, self.gimbal_pitch.getMaxPosition()]
         )
-        yaw_range = [self.gimbal_yaw.getMinPosition(), 0, self.gimbal_yaw.getMaxPosition()]
         yaw_value = self.clamp(
             yaw_command,
             input_range=[0, 0.5, 1],
-            target_range=yaw_range
+            target_range=[self.gimbal_yaw.getMinPosition(), 0, self.gimbal_yaw.getMaxPosition()]
         )
 
         self.gimbal_roll.setPosition(roll_value)
@@ -329,6 +326,7 @@ class WebotsArduVehicle:
         self.gimbal_yaw.setPosition(yaw_value)
 
         # print(roll_value, pitch_value, yaw_value)
+        # print(f"{pitch_command} -> {pitch_value}")
 
     def _handle_controls(self, command: tuple):
         """Set the motor speeds based on the SITL command
