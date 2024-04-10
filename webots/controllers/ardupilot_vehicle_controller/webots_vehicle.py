@@ -284,35 +284,43 @@ class WebotsArduVehicle:
                            gps_vel[0], -gps_vel[1], -gps_vel[2],
                            gps_pos[0], -gps_pos[1], -gps_pos[2])
 
-    def clamp(self, value, input_range, target_range, default_value=0):
-        if value < input_range[0] or value > input_range[1]:
+    def clamp(self, input_value, input_range, target_range, default_value=0):
+        input_min, input_mid, input_max = input_range
+        target_min, target_mid, target_max = target_range
+
+        if input_value < input_min or input_value > input_max:
             return default_value
 
-        normalized_value = (
-            ((value - input_range[0]) / (input_range[1] - input_range[0])) * (target_range[1] - target_range[0]) + target_range[0]
-        )
+        lower_slope = (target_mid - target_min) / (input_mid - input_min)
+        upper_slope = (target_max - target_mid) / (input_max - input_mid)
 
-        return normalized_value
+        lower_intercept = target_min - lower_slope * input_min
+        upper_intercept = target_mid - upper_slope * input_mid
+
+        if input_value <= input_mid:
+            return lower_slope * input_value + lower_intercept
+        else:
+            return upper_slope * input_value + upper_intercept
 
     def _handle_gimbal(self, command: tuple):
         roll_command, pitch_command, yaw_command = command
 
-        roll_range = [self.gimbal_roll.getMinPosition(), self.gimbal_roll.getMaxPosition()]
+        roll_range = [self.gimbal_roll.getMinPosition(), 0, self.gimbal_roll.getMaxPosition()]
         roll_value = self.clamp(
             roll_command,
-            input_range=[0, 1],
+            input_range=[0, 0.5, 1],
             target_range=roll_range
         )
-        pitch_range = [self.gimbal_pitch.getMinPosition(), self.gimbal_pitch.getMaxPosition()]
+        pitch_range = [self.gimbal_pitch.getMinPosition(), 0, self.gimbal_pitch.getMaxPosition()]
         pitch_value = self.clamp(
             pitch_command,
-            input_range=[0, 1],
+            input_range=[0, 0.5, 1],
             target_range=pitch_range
         )
-        yaw_range = [self.gimbal_yaw.getMinPosition(), self.gimbal_yaw.getMaxPosition()]
+        yaw_range = [self.gimbal_yaw.getMinPosition(), 0, self.gimbal_yaw.getMaxPosition()]
         yaw_value = self.clamp(
             yaw_command,
-            input_range=[0, 1],
+            input_range=[0, 0.5, 1],
             target_range=yaw_range
         )
 
@@ -320,7 +328,7 @@ class WebotsArduVehicle:
         self.gimbal_pitch.setPosition(pitch_value)
         self.gimbal_yaw.setPosition(yaw_value)
 
-        print(roll_value, pitch_value, yaw_value)
+        # print(roll_value, pitch_value, yaw_value)
 
     def _handle_controls(self, command: tuple):
         """Set the motor speeds based on the SITL command
