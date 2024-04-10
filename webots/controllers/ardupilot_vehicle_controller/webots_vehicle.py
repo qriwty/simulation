@@ -35,7 +35,7 @@ else:
 os.environ["PYTHONIOENCODING"] = "UTF-8"
 sys.path.append(f"{WEBOTS_HOME}/lib/controller/python")
 
-from controller import Robot, Camera, RangeFinder # noqa: E401, E402
+from controller import Robot, Camera, RangeFinder
 
 
 class WebotsArduVehicle:
@@ -55,6 +55,9 @@ class WebotsArduVehicle:
                  gimbal_roll: str = None,
                  gimbal_pitch: str = None,
                  gimbal_yaw: str = None,
+                 gimbal_roll_sensor: str = None,
+                 gimbal_pitch_sensor: str = None,
+                 gimbal_yaw_sensor: str = None,
                  camera_name: str = None,
                  camera_mode: str = "color",
                  camera_fps: int = 30,
@@ -153,6 +156,14 @@ class WebotsArduVehicle:
         self.gimbal_roll = self.robot.getDevice(gimbal_roll)
         self.gimbal_pitch = self.robot.getDevice(gimbal_pitch)
         self.gimbal_yaw = self.robot.getDevice(gimbal_yaw)
+
+        self.gimbal_roll_sensor = self.robot.getDevice(gimbal_roll_sensor)
+        self.gimbal_pitch_sensor = self.robot.getDevice(gimbal_pitch_sensor)
+        self.gimbal_yaw_sensor = self.robot.getDevice(gimbal_yaw_sensor)
+
+        self.gimbal_roll_sensor.enable(self._timestep)
+        self.gimbal_pitch_sensor.enable(self._timestep)
+        self.gimbal_yaw_sensor.enable(self._timestep)
 
         print(
             f"GIMBAL ROLL:\n"
@@ -269,6 +280,9 @@ class WebotsArduVehicle:
                            gps_vel[0], -gps_vel[1], -gps_vel[2],
                            gps_pos[0], -gps_pos[1], -gps_pos[2])
 
+    def _handle_gimbal(self, command: tuple):
+        roll, tilt, pan = command
+
     def _handle_controls(self, command: tuple):
         """Set the motor speeds based on the SITL command
 
@@ -276,8 +290,7 @@ class WebotsArduVehicle:
             command (tuple): tuple of motor speeds 0.0-1.0 where -1.0 is unused
         """
 
-        roll, tilt, pan = command[len(self._motors):len(self._motors) + 3]
-        # print(f"ROLL: {roll} | TILT {tilt} | PAN {pan}")
+        self._handle_gimbal(command[len(self._motors):len(self._motors) + 3])
 
         # get only the number of motors we have
         command_motors = command[:len(self._motors)]

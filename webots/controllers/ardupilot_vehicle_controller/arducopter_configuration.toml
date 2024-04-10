@@ -15,6 +15,9 @@ gps = "gps"
 roll = "camera roll"
 pitch = "camera pitch"
 yaw = "camera yaw"
+roll_sensor = "camera roll sensor"
+pitch_sensor = "camera pitch sensor"
+yaw_sensor = "camera yaw sensor"
 
 [camera]
 name = "camera"

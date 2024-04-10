@@ -23,9 +23,13 @@ imu_name = get_configuration_value("sensors", "imu", "inertial unit")
 gyro_name = get_configuration_value("sensors", "gyro", "gyro")
 gps_name = get_configuration_value("sensors", "gps", "gps")
 
-gimbal_roll = get_configuration_value("gimbal", "roll", "roll")
-gimbal_pitch = get_configuration_value("gimbal", "pitch", "roll")
-gimbal_yaw = get_configuration_value("gimbal", "yaw", "roll")
+gimbal_roll = get_configuration_value("gimbal", "roll", "camera roll")
+gimbal_pitch = get_configuration_value("gimbal", "pitch", "camera roll")
+gimbal_yaw = get_configuration_value("gimbal", "yaw", "camera roll")
+
+gimbal_roll_sensor = get_configuration_value("gimbal", "roll_sensor", "camera roll sensor")
+gimbal_pitch_sensor = get_configuration_value("gimbal", "pitch_sensor", "camera roll sensor")
+gimbal_yaw_sensor = get_configuration_value("gimbal", "yaw_sensor", "camera roll sensor")
 
 camera_name = get_configuration_value("camera", "name", "")
 camera_mode = get_configuration_value("camera", "mode", "color")
@@ -53,6 +57,9 @@ if __name__ == "__main__":
         gimbal_roll=gimbal_roll,
         gimbal_pitch=gimbal_pitch,
         gimbal_yaw=gimbal_yaw,
+        gimbal_roll_sensor=gimbal_roll_sensor,
+        gimbal_pitch_sensor=gimbal_pitch_sensor,
+        gimbal_yaw_sensor=gimbal_yaw_sensor,
         camera_name=camera_name,
         camera_fps=camera_fps,
         camera_stream_host=camera_host,
