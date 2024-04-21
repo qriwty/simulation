@@ -205,6 +205,9 @@ class WebotsArduVehicle:
         self._sitl_gimbal_thread = Thread(daemon=True, target=self._handle_sitl_gimbal, args=[sitl_address, 14551])
         self._sitl_gimbal_thread.start()
 
+    def clamp(self, value, minimum, maximum):
+        return max(minimum, min(value, maximum))
+
     def _handle_sitl_gimbal(self, sitl_address: str = "127.0.0.1", port: int = 14551):
         connection = mavutil.mavlink_connection(f"{sitl_address}:{port}")
 
@@ -214,15 +217,25 @@ class WebotsArduVehicle:
             gimbal_target_position = QuaternionBase(gimbal_message.q).euler
             target_roll, target_pitch, target_yaw = gimbal_target_position
 
-            roll_value = math.clamp(target_roll, self.gimbal_roll.getMinPosition(), self.gimbal_roll.getMaxPosition())
-            pitch_value = math.clamp(target_pitch, self.gimbal_pitch.getMinPosition(), self.gimbal_pitch.getMaxPosition())
-            yaw_value = math.clamp(target_yaw, self.gimbal_yaw.getMinPosition(), self.gimbal_yaw.getMaxPosition())
+            roll_value = self.clamp(
+                value=target_roll,
+                minimum=self.gimbal_roll.getMinPosition(),
+                maximum=self.gimbal_roll.getMaxPosition()
+            )
+            pitch_value = self.clamp(
+                value=target_pitch,
+                minimum=self.gimbal_pitch.getMinPosition(),
+                maximum=self.gimbal_pitch.getMaxPosition()
+            )
+            yaw_value = self.clamp(
+                value=target_yaw,
+                minimum=self.gimbal_yaw.getMinPosition(),
+                maximum=self.gimbal_yaw.getMaxPosition()
+            )
 
             self.gimbal_roll.setPosition(roll_value)
             self.gimbal_pitch.setPosition(pitch_value)
             self.gimbal_yaw.setPosition(yaw_value)
-
-
 
     def _handle_sitl(self, sitl_address: str = "127.0.0.1", port: int = 9002):
         """Handles all communications with the ArduPilot SITL
