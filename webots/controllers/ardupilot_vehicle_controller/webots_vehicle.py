@@ -12,8 +12,12 @@ import socket
 import select
 import struct
 import numpy as np
+import math
 from threading import Thread
 from typing import List, Union
+
+from pymavlink import mavutil
+from pymavlink.quaternion import QuaternionBase
 
 # Here we set up environment variables so we can run this script
 # as an external controller outside of Webots (useful for debugging)
@@ -198,6 +202,28 @@ class WebotsArduVehicle:
         self._sitl_thread = Thread(daemon=True, target=self._handle_sitl, args=[sitl_address, 9002+10*instance])
         self._sitl_thread.start()
 
+        self._sitl_gimbal_thread = Thread(daemon=True, target=self._handle_sitl_gimbal, args=[sitl_address, 14551])
+        self._sitl_gimbal_thread.start()
+
+    def _handle_sitl_gimbal(self, sitl_address: str = "127.0.0.1", port: int = 14551):
+        connection = mavutil.mavlink_connection(f"{sitl_address}:{port}")
+
+        while True:
+            gimbal_message = connection.recv_match(type="GIMBAL_DEVICE_ATTITUDE_STATUS", blocking=True)
+
+            gimbal_target_position = QuaternionBase(gimbal_message.q).euler
+            target_roll, target_pitch, target_yaw = gimbal_target_position
+
+            roll_value = math.clamp(target_roll, self.gimbal_roll.getMinPosition(), self.gimbal_roll.getMaxPosition())
+            pitch_value = math.clamp(target_pitch, self.gimbal_pitch.getMinPosition(), self.gimbal_pitch.getMaxPosition())
+            yaw_value = math.clamp(target_yaw, self.gimbal_yaw.getMinPosition(), self.gimbal_yaw.getMaxPosition())
+
+            self.gimbal_roll.setPosition(roll_value)
+            self.gimbal_pitch.setPosition(pitch_value)
+            self.gimbal_yaw.setPosition(yaw_value)
+
+
+
     def _handle_sitl(self, sitl_address: str = "127.0.0.1", port: int = 9002):
         """Handles all communications with the ArduPilot SITL
 
@@ -284,49 +310,49 @@ class WebotsArduVehicle:
                            gps_vel[0], -gps_vel[1], -gps_vel[2],
                            gps_pos[0], -gps_pos[1], -gps_pos[2])
 
-    def clamp(self, input_value, input_range, target_range, default_value=0):
-        input_min, input_mid, input_max = input_range
-        target_min, target_mid, target_max = target_range
-
-        if input_value < input_min or input_value > input_max:
-            return default_value
-
-        lower_slope = (target_mid - target_min) / (input_mid - input_min)
-        upper_slope = (target_max - target_mid) / (input_max - input_mid)
-
-        lower_intercept = target_min - lower_slope * input_min
-        upper_intercept = target_mid - upper_slope * input_mid
-
-        if input_value <= input_mid:
-            return lower_slope * input_value + lower_intercept
-        else:
-            return upper_slope * input_value + upper_intercept
-
-    def _handle_gimbal(self, command: tuple):
-        roll_command, pitch_command, yaw_command = command
-
-        roll_value = self.clamp(
-            roll_command,
-            input_range=[0, 0.5, 1],
-            target_range=[self.gimbal_roll.getMinPosition(), 0, self.gimbal_roll.getMaxPosition()]
-        )
-        pitch_value = self.clamp(
-            pitch_command,
-            input_range=[0, 0.75, 1],
-            target_range=[self.gimbal_pitch.getMinPosition(), 0, self.gimbal_pitch.getMaxPosition()]
-        )
-        yaw_value = self.clamp(
-            yaw_command,
-            input_range=[0, 0.5, 1],
-            target_range=[self.gimbal_yaw.getMinPosition(), 0, self.gimbal_yaw.getMaxPosition()]
-        )
-
-        self.gimbal_roll.setPosition(roll_value)
-        self.gimbal_pitch.setPosition(pitch_value)
-        self.gimbal_yaw.setPosition(yaw_value)
-
-        # print(roll_value, pitch_value, yaw_value)
-        # print(f"{pitch_command} -> {pitch_value}")
+    # def clamp(self, input_value, input_range, target_range, default_value=0):
+    #     input_min, input_mid, input_max = input_range
+    #     target_min, target_mid, target_max = target_range
+    #
+    #     if input_value < input_min or input_value > input_max:
+    #         return default_value
+    #
+    #     lower_slope = (target_mid - target_min) / (input_mid - input_min)
+    #     upper_slope = (target_max - target_mid) / (input_max - input_mid)
+    #
+    #     lower_intercept = target_min - lower_slope * input_min
+    #     upper_intercept = target_mid - upper_slope * input_mid
+    #
+    #     if input_value <= input_mid:
+    #         return lower_slope * input_value + lower_intercept
+    #     else:
+    #         return upper_slope * input_value + upper_intercept
+    #
+    # def _handle_gimbal(self, command: tuple):
+    #     roll_command, pitch_command, yaw_command = command
+    #
+    #     roll_value = self.clamp(
+    #         roll_command,
+    #         input_range=[0, 0.5, 1],
+    #         target_range=[self.gimbal_roll.getMinPosition(), 0, self.gimbal_roll.getMaxPosition()]
+    #     )
+    #     pitch_value = self.clamp(
+    #         pitch_command,
+    #         input_range=[0, 0.75, 1],
+    #         target_range=[self.gimbal_pitch.getMinPosition(), 0, self.gimbal_pitch.getMaxPosition()]
+    #     )
+    #     yaw_value = self.clamp(
+    #         yaw_command,
+    #         input_range=[0, 0.5, 1],
+    #         target_range=[self.gimbal_yaw.getMinPosition(), 0, self.gimbal_yaw.getMaxPosition()]
+    #     )
+    #
+    #     self.gimbal_roll.setPosition(roll_value)
+    #     self.gimbal_pitch.setPosition(pitch_value)
+    #     self.gimbal_yaw.setPosition(yaw_value)
+    #
+    #     # print(roll_value, pitch_value, yaw_value)
+    #     # print(f"{pitch_command} -> {pitch_value}")
 
     def _handle_controls(self, command: tuple):
         """Set the motor speeds based on the SITL command
@@ -335,7 +361,7 @@ class WebotsArduVehicle:
             command (tuple): tuple of motor speeds 0.0-1.0 where -1.0 is unused
         """
 
-        self._handle_gimbal(command[len(self._motors):len(self._motors) + 3])
+        # self._handle_gimbal(command[len(self._motors):len(self._motors) + 3])
 
         # get only the number of motors we have
         command_motors = command[:len(self._motors)]
