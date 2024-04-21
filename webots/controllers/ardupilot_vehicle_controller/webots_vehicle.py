@@ -216,6 +216,8 @@ class WebotsArduVehicle:
 
             gimbal_target_position = QuaternionBase(gimbal_message.q).euler
             target_roll, target_pitch, target_yaw = gimbal_target_position
+            target_pitch = -target_pitch
+            target_yaw = -target_yaw
 
             roll_value = self.clamp(
                 value=target_roll,
