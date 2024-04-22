@@ -417,7 +417,9 @@ class WebotsArduVehicle:
                     data = self._get_drone_data()
                     serialized_data = data.to_json()
 
-                    conn.sendall(serialized_data.encode("utf-8"))
+                    separator = "\n"
+
+                    conn.sendall((serialized_data + separator).encode("utf-8"))
 
                     # delay at sample rate
                     while self.robot.getTime() - start_time < self.rangefinder.getSamplingPeriod() / 1000:
