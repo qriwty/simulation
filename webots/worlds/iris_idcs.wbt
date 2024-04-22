@@ -54,18 +54,6 @@ Pedestrian {
     "--speed=0.5"
     "--trajectory= 2 1, 3 -7, 18 6, 26 15, 4 12, -2 1, -1 -9, 3 -2"
   ]
-  rightLegAngle -0.6740909090909103
-  rightLowerLegAngle 1.4744545454545461
-  rightFootAngle 0.07
-  leftLegAngle -0.2787272727272701
-  leftLowerLegAngle 0.49254545454545123
-  rightArmAngle -0.366954545454544
-  rightLowerArmAngle -0.06618181818181881
-  rightHandAngle 0.07036363636363589
-  leftArmAngle 0.37522727272727135
-  leftLowerArmAngle -0.39968181818181747
-  leftHandAngle -0.07031818181818249
-  headAngle 0.1427727272727269
 }
 Table {
   translation 0 0.92 0
@@ -185,16 +173,27 @@ Robot {
                           ]
                         }
                       }
-                      DEF CAMERA_SLOT Pose {
+                      DEF GIMBAL_SLOT Pose {
                         children [
                           RangeFinder {
-                            width 320
-                            height 240
+                            name "rangefinder"
+                            fieldOfView 0.01
+                            minRange 1
+                            maxRange 1000
+                          }
+                          RangeFinder {
+                            name "depth_camera"
+                            fieldOfView 0.785
+                            width 640
+                            height 480
+                            minRange 0.1
                             maxRange 20
                           }
                           Camera {
-                            width 400
-                            height 240
+                            name "color_camera"
+                            fieldOfView 0.785
+                            width 640
+                            height 480
                           }
                         ]
                       }
@@ -358,7 +357,7 @@ Robot {
   ]
   name "Iris"
   boundingObject Box {
-    size 0.47 0.47 0.13
+    size 0.47 0.47 0.15
   }
   physics Physics {
     density -1
