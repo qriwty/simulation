@@ -3,7 +3,7 @@ This file implements a class that acts as a bridge between ArduPilot SITL and We
 
 AP_FLAKE8_CLEAN
 '''
-
+import base64
 # Imports
 import os
 import sys
@@ -40,6 +40,9 @@ os.environ["PYTHONIOENCODING"] = "UTF-8"
 sys.path.append(f"{WEBOTS_HOME}/lib/controller/python")
 
 from controller import Robot, Camera, RangeFinder
+from drone_data import RangefinderData, CameraData, FDMData, GimbalAxisData, GimbalData, DroneData
+from dataclasses import dataclass, asdict, is_dataclass
+import json
 
 
 class WebotsArduVehicle:
@@ -133,30 +136,6 @@ class WebotsArduVehicle:
         self.gyro.enable(self._timestep)
         self.gps.enable(self._timestep)
 
-        # init camera
-        if camera_name is not None:
-            self.camera = self.robot.getDevice(camera_name)
-            self.camera.enable(1000//camera_fps) # takes frame period in ms
-
-            # start camera streaming thread if requested
-            if camera_stream_port is not None:
-                self._camera_thread = Thread(daemon=True,
-                                             target=self._handle_image_stream,
-                                             args=[self.camera, camera_stream_host, camera_stream_port])
-                self._camera_thread.start()
-
-        # init rangefinder
-        if rangefinder_name is not None:
-            self.rangefinder = self.robot.getDevice(rangefinder_name)
-            self.rangefinder.enable(1000//rangefinder_fps) # takes frame period in ms
-
-            # start rangefinder streaming thread if requested
-            if rangefinder_stream_port is not None:
-                self._rangefinder_thread = Thread(daemon=True,
-                                                  target=self._handle_image_stream,
-                                                  args=[self.rangefinder, rangefinder_stream_host, rangefinder_stream_port])
-                self._rangefinder_thread.start()
-
         self.gimbal_roll = self.robot.getDevice(gimbal_roll)
         self.gimbal_pitch = self.robot.getDevice(gimbal_pitch)
         self.gimbal_yaw = self.robot.getDevice(gimbal_yaw)
@@ -173,24 +152,19 @@ class WebotsArduVehicle:
         self.gimbal_pitch.setPosition(0)
         self.gimbal_yaw.setPosition(0)
 
-        print(
-            f"GIMBAL ROLL:\n"
-            f"\ttarget position: {self.gimbal_roll.getTargetPosition()}\n"
-            f"\tmin position: {self.gimbal_roll.getMinPosition()}\n"
-            f"\tmax position: {self.gimbal_roll.getMaxPosition()}\n"
-        )
-        print(
-            f"GIMBAL PITCH:\n"
-            f"\ttarget position: {self.gimbal_pitch.getTargetPosition()}\n"
-            f"\tmin position: {self.gimbal_pitch.getMinPosition()}\n"
-            f"\tmax position: {self.gimbal_pitch.getMaxPosition()}\n"
-        )
-        print(
-            f"GIMBAL YAW:\n"
-            f"\ttarget position: {self.gimbal_yaw.getTargetPosition()}\n"
-            f"\tmin position: {self.gimbal_yaw.getMinPosition()}\n"
-            f"\tmax position: {self.gimbal_yaw.getMaxPosition()}\n"
-        )
+        self.camera = self.robot.getDevice(camera_name)
+        self.camera.enable(1000 // camera_fps)  # takes frame period in ms
+
+        self.rangefinder = self.robot.getDevice(rangefinder_name)
+        self.rangefinder.enable(1000 // camera_fps)
+
+        self._data_thread = Thread(daemon=True,
+                                   target=self._handle_stream,
+                                   args=[camera_stream_host, camera_stream_port])
+        self._data_thread.start()
+
+        self._camera_data_type = "uint8"
+        self._rangefinder_data_type = "uint8"
 
         # init motors (and setup velocity control)
         self._motors = [self.robot.getDevice(n) for n in motor_names]
@@ -325,50 +299,6 @@ class WebotsArduVehicle:
                            gps_vel[0], -gps_vel[1], -gps_vel[2],
                            gps_pos[0], -gps_pos[1], -gps_pos[2])
 
-    # def clamp(self, input_value, input_range, target_range, default_value=0):
-    #     input_min, input_mid, input_max = input_range
-    #     target_min, target_mid, target_max = target_range
-    #
-    #     if input_value < input_min or input_value > input_max:
-    #         return default_value
-    #
-    #     lower_slope = (target_mid - target_min) / (input_mid - input_min)
-    #     upper_slope = (target_max - target_mid) / (input_max - input_mid)
-    #
-    #     lower_intercept = target_min - lower_slope * input_min
-    #     upper_intercept = target_mid - upper_slope * input_mid
-    #
-    #     if input_value <= input_mid:
-    #         return lower_slope * input_value + lower_intercept
-    #     else:
-    #         return upper_slope * input_value + upper_intercept
-    #
-    # def _handle_gimbal(self, command: tuple):
-    #     roll_command, pitch_command, yaw_command = command
-    #
-    #     roll_value = self.clamp(
-    #         roll_command,
-    #         input_range=[0, 0.5, 1],
-    #         target_range=[self.gimbal_roll.getMinPosition(), 0, self.gimbal_roll.getMaxPosition()]
-    #     )
-    #     pitch_value = self.clamp(
-    #         pitch_command,
-    #         input_range=[0, 0.75, 1],
-    #         target_range=[self.gimbal_pitch.getMinPosition(), 0, self.gimbal_pitch.getMaxPosition()]
-    #     )
-    #     yaw_value = self.clamp(
-    #         yaw_command,
-    #         input_range=[0, 0.5, 1],
-    #         target_range=[self.gimbal_yaw.getMinPosition(), 0, self.gimbal_yaw.getMaxPosition()]
-    #     )
-    #
-    #     self.gimbal_roll.setPosition(roll_value)
-    #     self.gimbal_pitch.setPosition(pitch_value)
-    #     self.gimbal_yaw.setPosition(yaw_value)
-    #
-    #     # print(roll_value, pitch_value, yaw_value)
-    #     # print(f"{pitch_command} -> {pitch_value}")
-
     def _handle_controls(self, command: tuple):
         """Set the motor speeds based on the SITL command
 
@@ -403,42 +333,71 @@ class WebotsArduVehicle:
         for i, m in enumerate(self._motors):
             m.setVelocity(linearized_motor_commands[i] * min(m.getMaxVelocity(), self.motor_velocity_cap))
 
-    def _handle_image_stream(self, camera: Union[Camera, RangeFinder], host: str, port: int):
-        """Stream grayscale images over TCP
+    def _get_drone_data(self):
+        fdm_data = FDMData.create(
+            timestamp=self.robot.getTime(),
+            imu=self.imu.getRollPitchYaw(),
+            gyroscope=self.gyro.getValues(),
+            accelerometer=self.accel.getValues(),
+            gps_position=self.gps.getValues(),
+            gps_velocity=self.gps.getSpeedVector()
+        )
 
-        Args:
-            camera (Camera or RangeFinder): the camera to get images from
-            port (int): port to send images over
-        """
+        gimbal_data = GimbalData(
+            timestamp=self.robot.getTime(),
+            roll=GimbalAxisData(
+                min=self.gimbal_roll.getMinPosition(),
+                max=self.gimbal_roll.getMaxPosition(),
+                current=self.gimbal_roll_sensor.getValue(),
+                target=self.gimbal_roll.getTargetPosition()
+            ),
+            pitch=GimbalAxisData(
+                min=self.gimbal_pitch.getMinPosition(),
+                max=self.gimbal_pitch.getMaxPosition(),
+                current=self.gimbal_pitch_sensor.getValue(),
+                target=self.gimbal_pitch.getTargetPosition()
+            ),
+            yaw=GimbalAxisData(
+                min=self.gimbal_yaw.getMinPosition(),
+                max=self.gimbal_yaw.getMaxPosition(),
+                current=self.gimbal_yaw_sensor.getValue(),
+                target=self.gimbal_yaw.getTargetPosition()
+            )
+        )
 
-        # get camera info
-        # https://cyberbotics.com/doc/reference/camera
-        if isinstance(camera, Camera):
-            cam_sample_period = self.camera.getSamplingPeriod()
-            cam_width = self.camera.getWidth()
-            cam_height = self.camera.getHeight()
-            cam_fov = self.camera.getFov()
-            cam_focal_length = self.camera.getFocalLength()
-            cam_focal_distance = self.camera.getFocalDistance()
-            print(f"\nCamera stream started at {host}:{port} (I-{self._instance})\n"
-                  f"\t width: {cam_width} | height: {cam_height} | fps: {1000/cam_sample_period:0.2f} | "
-                  f"fov: {cam_fov} | focal length: {cam_focal_length} | focal distance {cam_focal_distance}")
-        elif isinstance(camera, RangeFinder):
-            cam_sample_period = self.rangefinder.getSamplingPeriod()
-            cam_width = self.rangefinder.getWidth()
-            cam_height = self.rangefinder.getHeight()
-            cam_fov = self.rangefinder.getFov()
-            cam_min_range = self.rangefinder.getMinRange()
-            cam_max_range = self.rangefinder.getMaxRange()
-            print(f"\nRangeFinder stream started at {host}:{port} (I-{self._instance})\n"
-                  f"\t width: {cam_width} | height: {cam_height} | fps: {1000/cam_sample_period:0.2f} | "
-                  f"fov: {cam_fov} | min range: {cam_min_range} | max range: {cam_max_range}")
-        else:
-            print(sys.stderr, f"Error: camera passed to _handle_image_stream is of invalid type "
-                              f"'{type(camera)}' (I-{self._instance})")
-            return
+        camera_data = CameraData(
+            timestamp=self.robot.getTime(),
+            width=self.camera.getWidth(),
+            height=self.camera.getHeight(),
+            fps=1000 / self.camera.getSamplingPeriod(),
+            fov=self.camera.getFov(),
+            data_type=self._camera_data_type,
+            frame=self.get_camera_frame()
+        )
 
-        # create a local TCP socket server
+        rangefinder_data = RangefinderData(
+            timestamp=self.robot.getTime(),
+            width=self.rangefinder.getWidth(),
+            height=self.rangefinder.getHeight(),
+            fps=1000 / self.rangefinder.getSamplingPeriod(),
+            fov=self.rangefinder.getFov(),
+            min_range=self.rangefinder.getMinRange(),
+            max_range=self.rangefinder.getMaxRange(),
+            data_type=self._rangefinder_data_type,
+            frame=self.get_rangefinder_frame()
+        )
+
+        drone_data = DroneData(
+            timestamp=self.robot.getTime(),
+            fdm=fdm_data,
+            gimbal=gimbal_data,
+            camera=camera_data,
+            rangefinder=rangefinder_data
+        )
+
+        return drone_data
+
+    def _handle_stream(self, host: str, port: int):
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         server.bind((host, port))
@@ -450,36 +409,18 @@ class WebotsArduVehicle:
             conn, _ = server.accept()
             print(f"Connected to camera client (I-{self._instance})")
 
-            # send images to client
             try:
                 while self._webots_connected:
                     # delay at sample rate
                     start_time = self.robot.getTime()
 
-                    # get image
-                    img = None
-                    if isinstance(camera, Camera):
-                        if self._camera_mode == "color":
-                            img = self.get_camera_image()
-                        elif self._camera_mode == "greyscale":
-                            img = self.get_camera_gray_image()
-                    elif isinstance(camera, RangeFinder):
-                        img = self.get_rangefinder_image()
+                    data = self._get_drone_data()
+                    serialized_data = data.to_json()
 
-                    if img is None:
-                        print(f"No image received (I-{self._instance})")
-                        time.sleep(cam_sample_period/1000)
-                        continue
-
-                    # create a header struct with image size
-                    header = struct.pack("=HH", cam_width, cam_height)
-
-                    # pack header and image and send
-                    data = header + img.tobytes()
-                    conn.sendall(data)
+                    conn.sendall(serialized_data.encode("utf-8"))
 
                     # delay at sample rate
-                    while self.robot.getTime() - start_time < cam_sample_period/1000:
+                    while self.robot.getTime() - start_time < self.rangefinder.getSamplingPeriod() / 1000:
                         time.sleep(0.001)
 
             except ConnectionResetError:
@@ -490,19 +431,21 @@ class WebotsArduVehicle:
                 conn.close()
                 print(f"Camera client disconnected (I-{self._instance})")
 
-    def get_camera_gray_image(self) -> np.ndarray:
-        """Get the grayscale image from the camera as a numpy array of bytes"""
-        img = self.get_camera_image()
-        img_gray = np.average(img, axis=2).astype(np.uint8)
-        return img_gray
-
-    def get_camera_image(self) -> np.ndarray:
+    def get_camera_frame(self) -> np.ndarray:
         """Get the RGB image from the camera as a numpy array of bytes"""
         img = self.camera.getImage()
-        img = np.frombuffer(img, np.uint8).reshape((self.camera.getHeight(), self.camera.getWidth(), 4))
+
+        if self._camera_data_type == "uint8":
+            data_type = np.uint8
+        elif self._camera_data_type == "uint16":
+            data_type = np.float32
+        else:
+            raise ValueError("Unsupported data type specified")
+
+        img = np.frombuffer(img, data_type).reshape((self.camera.getHeight(), self.camera.getWidth(), 4))
         return img[:, :, :3] # RGB only, no Alpha
 
-    def get_rangefinder_image(self, use_int16: bool = False) -> np.ndarray:
+    def get_rangefinder_frame(self) -> np.ndarray:
         """Get the rangefinder depth image as a numpy array of int8 or int16"""\
 
         # get range image size
@@ -521,10 +464,12 @@ class WebotsArduVehicle:
         img_normalized[img_normalized == float('inf')] = 1
 
         # convert to int8 or int16, allowing for the option of higher precision if desired
-        if use_int16:
+        if self._rangefinder_data_type == "uint8":
+            img = (img_normalized * 255).astype(np.uint8)
+        elif self._rangefinder_data_type == "uint16":
             img = (img_normalized * 65535).astype(np.uint16)
         else:
-            img = (img_normalized * 255).astype(np.uint8)
+            raise ValueError("Unsupported data type specified")
 
         return img
 
