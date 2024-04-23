@@ -178,14 +178,16 @@ Robot {
                           RangeFinder {
                             name "rangefinder"
                             fieldOfView 0.01
+                            width 64
+                            height 64
                             minRange 1
                             maxRange 1000
                           }
                           RangeFinder {
                             name "depth_camera"
                             fieldOfView 0.785
-                            width 640
-                            height 480
+                            width 320
+                            height 240
                             minRange 0.1
                             maxRange 20
                           }
