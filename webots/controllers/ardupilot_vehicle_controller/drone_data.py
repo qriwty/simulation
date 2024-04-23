@@ -20,7 +20,7 @@ class RangefinderData:
     frame: numpy.ndarray = field(repr=False)
 
     def encode_frame(self):
-        _, buffer = cv2.imencode(".jpg", self.frame, [int(cv2.IMWRITE_JPEG_QUALITY), 90])
+        _, buffer = cv2.imencode(".png", self.frame, [cv2.IMWRITE_PNG_COMPRESSION, 0])
         encoded_frame = base64.b64encode(buffer).decode("utf-8")
 
         return encoded_frame
@@ -36,7 +36,7 @@ class RangefinderData:
             raise ValueError("Unsupported data type specified")
 
         frame_array = numpy.frombuffer(image_decoded, dtype=data_type)
-        decoded_frame = cv2.imdecode(frame_array, cv2.IMREAD_GRAYSCALE)
+        decoded_frame = cv2.imdecode(frame_array, cv2.IMREAD_UNCHANGED)
 
         return decoded_frame
 
