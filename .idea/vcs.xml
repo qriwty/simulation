@@ -5,9 +5,14 @@
     <mapping directory="$PROJECT_DIR$/ardupilot" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/ardupilot/modules/ChibiOS" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/ardupilot/modules/CrashDebug" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ardupilot/modules/CrashDebug/CrashCatcher" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ardupilot/modules/CrashDebug/CrashCatcher/CppUTest" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ardupilot/modules/CrashDebug/mri" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ardupilot/modules/CrashDebug/mri/CppUTest" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/ardupilot/modules/DroneCAN/DSDL" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/ardupilot/modules/DroneCAN/dronecan_dsdlc" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/ardupilot/modules/DroneCAN/libcanard" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ardupilot/modules/DroneCAN/libcanard/drivers/avr/avr-can-lib" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/ardupilot/modules/DroneCAN/pydronecan" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/ardupilot/modules/Micro-CDR" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/ardupilot/modules/Micro-XRCE-DDS-Client" vcs="Git" />
@@ -16,6 +21,7 @@
     <mapping directory="$PROJECT_DIR$/ardupilot/modules/gtest" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/ardupilot/modules/lwip" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/ardupilot/modules/mavlink" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ardupilot/modules/mavlink/pymavlink" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/ardupilot/modules/waf" vcs="Git" />
   </component>
 </project>

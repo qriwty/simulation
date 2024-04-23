@@ -128,6 +128,10 @@ class FDMData:
     def to_json(self):
         return json.dumps(asdict(self))
 
+    @classmethod
+    def from_dict(cls, data):
+        return cls(**data)
+
 
 @dataclass
 class GimbalAxisData:
@@ -138,6 +142,10 @@ class GimbalAxisData:
 
     def to_json(self):
         return json.dumps(asdict(self))
+
+    @classmethod
+    def from_dict(cls, data):
+        return cls(**data)
 
 
 @dataclass
@@ -153,6 +161,15 @@ class GimbalData:
                            "pitch": json.loads(self.pitch.to_json()),
                            "yaw": json.loads(self.yaw.to_json())})
 
+    @classmethod
+    def from_dict(cls, data):
+        return cls(
+            timestamp=data["timestamp"],
+            roll=GimbalAxisData.from_dict(data["roll"]),
+            pitch=GimbalAxisData.from_dict(data["pitch"]),
+            yaw=GimbalAxisData.from_dict(data["yaw"])
+        )
+
 
 @dataclass
 class DroneData:
@@ -160,6 +177,7 @@ class DroneData:
     fdm: FDMData
     gimbal: GimbalData
     camera: CameraData
+    depth: RangefinderData
     rangefinder: RangefinderData
 
     def to_json(self):
@@ -167,4 +185,18 @@ class DroneData:
                            "fdm": json.loads(self.fdm.to_json()),
                            "gimbal": json.loads(self.gimbal.to_json()),
                            "camera": json.loads(self.camera.to_json()),
+                           "depth": json.loads(self.depth.to_json()),
                            "rangefinder": json.loads(self.rangefinder.to_json())})
+
+    @classmethod
+    def from_json(cls, data):
+        data = json.loads(data)
+
+        return cls(
+            timestamp=data["timestamp"],
+            fdm=FDMData.from_dict(data["fdm"]),
+            gimbal=GimbalData.from_dict(data["gimbal"]),
+            camera=CameraData.from_dict(data["camera"]),
+            depth=RangefinderData.from_dict(data["depth"]),
+            rangefinder=RangefinderData.from_dict(data["rangefinder"])
+        )
