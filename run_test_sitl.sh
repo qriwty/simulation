@@ -1,0 +1,1 @@
+python ardupilot/Tools/autotest/sim_vehicle.py -v ArduCopter -w --model webots-python --add-param-file=webots/params/iris.parm --out 127.0.0.1:14551 --out 127.0.0.1:14552 --out 127.0.0.1:14553 --out 192.168.0.108:14550 --out 192.168.0.108:14551
